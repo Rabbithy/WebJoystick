@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="shortcut icon" href="images/icon.png" type="image/png">
+    <head>
+        <title>Joystick</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+    </head>
+    <body>
+    	<div id="initialMenu">
+	    	<select id="controlSelector">
+	    		<option value="1">Controle 1</option>
+	    		<option value="2">Controle 2</option>
+		    	<option value="3">Controle 3</option>
+	    	</select>
+	    	<button onclick="startConnection()">Iniciar</button>
+    	</div>
+
+    	<div id="control" hidden>
+			<div id="directionalButtons">
+				<button id="buttonUp" class="bt" ontouchstart="sendPressEvent('up')" ontouchend="sendReleaseEvent('up')">
+					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-caret-up" viewBox="0 0 16 16">
+						<path d="M3.204 11h9.592L8 5.519 3.204 11zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659z"/>
+					</svg>
+				</button>
+
+				<button id="buttonRight" class="bt" ontouchstart="sendPressEvent('right')" ontouchend="sendReleaseEvent('right')">
+					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+						<path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
+					</svg>
+				</button>
+
+				<button id="buttonLeft" class="bt" ontouchstart="sendPressEvent('left')" ontouchend="sendReleaseEvent('left')">
+					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+						<path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
+					</svg>
+				</button>
+				
+				<button id="buttonDown" class="bt" ontouchstart="sendPressEvent('down')" ontouchend="sendReleaseEvent('down')">
+					
+					<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-caret-down" viewBox="0 0 16 16">
+						<path d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+					</svg>
+				</button>
+			</div>
+
+			<div id="actionButtons">
+				<button id="buttonX" class="bt action-bt" ontouchstart="sendPressEvent('x')" ontouchend="sendReleaseEvent('x')">
+					<span>X</span>
+				</button>
+
+				<button id="buttonB" class="bt action-bt" ontouchstart="sendPressEvent('b')" ontouchend="sendReleaseEvent('b')">
+					<span>B</span>
+				</button>
+
+				<button id="buttonY" class="bt action-bt" ontouchstart="sendPressEvent('y')" ontouchend="sendReleaseEvent('y')">
+					<span>Y</span>
+				</button>
+				
+				<button id="buttonA" class="bt action-bt" ontouchstart="sendPressEvent('a')" ontouchend="sendReleaseEvent('a')">
+					<span>A</span>
+				</button>
+			</div>
+			<div id="centralButtons">
+				<button id="buttonStart" ontouchstart="sendPressEvent('start')" ontouchend="sendReleaseEvent('start')">Start</button>
+				<button id="buttonSelect" ontouchstart="sendPressEvent('select')" ontouchend="sendReleaseEvent('select')">Select</button>
+			</div>
+    	</div>
+        
+        <script>
+            const controlEl = document.getElementById('control');
+            const initialMenuEl = document.getElementById('initialMenu');
+            const controlSelector = document.getElementById('controlSelector');
+
+            const audio = new Audio();
+			var ws;
+            audio.src = '/bt_sound.mp3';
+			
+            function startConnection() {
+				ws = new WebSocket(`ws://${window.location.hostname}:1024`);				
+            	handshakeEvent = {control: parseInt(controlSelector.value)};
+                ws.send(JSON.stringify(handshakeEvent));
+				
+				initialMenuEl.hidden = true;
+            	controlEl.hidden = false;
+            }
+            
+            function sendPressEvent(key) {
+                audio.currentTime = 0;
+                audio.play();
+                const event  = {
+                    type: 'KEY_DOWN',
+                    key: key
+                }
+                ws.send(JSON.stringify(event));
+            }
+
+            function sendReleaseEvent(key) {
+                const event  = {
+                    type: 'KEY_UP',
+                    key: key
+                }
+                ws.send(JSON.stringify(event));
+            }
+        </script>
+    </body>
+</html>
