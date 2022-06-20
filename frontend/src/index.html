@@ -67,7 +67,7 @@
 				<button id="buttonSelect" ontouchstart="sendPressEvent('select')" ontouchend="sendReleaseEvent('select')">Select</button>
 			</div>
     	</div>
-        
+
         <script>
             const controlEl = document.getElementById('control');
             const initialMenuEl = document.getElementById('initialMenu');
@@ -78,12 +78,14 @@
             audio.src = '/bt_sound.mp3';
 			
             function startConnection() {
-				ws = new WebSocket(`ws://${window.location.hostname}:1024`);				
-            	handshakeEvent = {control: parseInt(controlSelector.value)};
-                ws.send(JSON.stringify(handshakeEvent));
-				
-				initialMenuEl.hidden = true;
-            	controlEl.hidden = false;
+				ws = new WebSocket(`ws://${window.location.hostname}:1024`);
+				ws.onopen = () => {
+					handshakeEvent = {control: parseInt(controlSelector.value)};
+					console.log(ws.OPEN, ws.CLOSED);
+                	ws.send(JSON.stringify(handshakeEvent));
+					initialMenuEl.hidden = true;
+            		controlEl.hidden = false;
+				};
             }
             
             function sendPressEvent(key) {
