@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="shortcut icon" href="images/icon.png" type="image/png">
     <head>
         <title>Joystick</title>
@@ -67,7 +67,7 @@
 				<button id="buttonSelect" ontouchstart="sendPressEvent('select')" ontouchend="sendReleaseEvent('select')">Select</button>
 			</div>
     	</div>
-
+		
         <script>
             const controlEl = document.getElementById('control');
             const initialMenuEl = document.getElementById('initialMenu');
@@ -85,6 +85,7 @@
                 	ws.send(JSON.stringify(handshakeEvent));
 					initialMenuEl.hidden = true;
             		controlEl.hidden = false;
+					document.body.requestFullscreen();
 				};
             }
             
